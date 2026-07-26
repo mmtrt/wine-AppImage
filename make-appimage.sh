@@ -83,5 +83,12 @@ if [ "$ARCH" = 'x86_64' ]; then
 	i686-w64-mingw32-strip   -R .comment --strip-unneeded ./AppDir/lib/wine/i386-windows/*.dll
 fi
 
+# Disable FileOpenAssociations
+sed -i 's|    LicenseInformation|    LicenseInformation,\\\n    FileOpenAssociations|g;$a \\n[FileOpenAssociations]\nHKCU,Software\\Wine\\FileOpenAssociations,"Enable",,"N"' AppDir/share/wine/wine.inf
+
+# Disable winemenubuilder
+sed -i 's|    FileOpenAssociations|    FileOpenAssociations,\\\n    DllOverrides|;$a \\n[DllOverrides]\nHKCU,Software\\Wine\\DllOverrides,"*winemenubuilder.exe",,""' AppDir/share/wine/wine.inf
+sed -i '/\%11\%\\winemenubuilder.exe -a -r/d' AppDir/share/wine/wine.inf
+
 # Turn AppDir into AppImage
 quick-sharun --make-appimage
